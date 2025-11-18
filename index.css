@@ -1,69 +1,137 @@
-body {
-    font-family: 'Roboto', sans-serif; /* Use a more modern font */
-    text-align: center;
-    background-color: #f4f7fa; /* Light background color */
-    margin: 0;
+* {
+    box-sizing: border-box;
     padding: 0;
+    margin: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    font-family: "Poppins", sans-serif;
+}
+
+.container {
+    text-align: center;
+    background: #ffffffdd;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: #222;
 }
 
 .game-board {
     display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-template-rows: repeat(3, 100px);
+    grid-template-columns: repeat(3, 110px);
+    grid-template-rows: repeat(3, 110px);
     gap: 10px;
-    margin: 20px;
-    justify-content: center;
-    align-items: center;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
 }
 
 .cell {
-    width: 100px;
-    height: 100px;
-    background-color: #e1e5ec; /* Soft gray for cells */
+    width: 110px;
+    height: 110px;
+    background: #f0f0f5;
+    border-radius: 15px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 40px;
-    color: #333;
+    align-items: center;
+    font-size: 50px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    color: #333;
+    border: 3px solid #ccc;
+    transition: all 0.25s ease;
 }
 
 .cell:hover {
-    background-color: #f5f5f5; /* Slightly lighter hover effect */
+    background: #ffffff;
     transform: scale(1.05);
 }
 
-.cell:active {
-    transform: scale(0.95); /* Add click animation */
+/* Winning cell highlight */
+.cell.win {
+    background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+    color: #fff;
+    border-color: #1e8449;
+    box-shadow: 0 8px 30px rgba(46, 204, 113, 0.25);
+    transform: scale(1.06);
+}
+
+.buttons {
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 25px;
+    margin: 0 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    transition: 0.25s;
 }
 
 #restartButton {
-    background-color: #007BFF; /* Bright blue color */
-    color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    background-color: #007bff;
 }
 
 #restartButton:hover {
-    background-color: #0056b3; /* Darker blue when hovered */
+    background-color: #0056b3;
 }
 
-#restartButton:active {
-    transform: scale(0.98); /* Add click animation */
+#undoButton {
+    background-color: #ff9800;
+}
+
+#undoButton:disabled {
+    background-color: #c9c9c9;
+    cursor: not-allowed;
+}
+
+.results {
+    margin-top: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #222;
+}
+
+/* Responsive tweaks for small screens */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 28px;
+    }
+
+    .game-board {
+        grid-template-columns: repeat(3, 70px);
+        grid-template-rows: repeat(3, 70px);
+        gap: 8px;
+        margin: 16px auto;
+    }
+
+    .cell {
+        width: 70px;
+        height: 70px;
+        font-size: 34px;
+        border-radius: 10px;
+    }
+
+    button {
+        padding: 8px 18px;
+        font-size: 14px
+    }
+
+    .container {
+        padding: 20px;
+    }
 }

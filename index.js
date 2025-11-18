@@ -1,107 +1,129 @@
-var gameBoard = document.querySelector('.game-board')
-  if (gameBoard) {
-    gameBoard.style.justifyContent = 'center'
-    gameBoard.style.width = '100wh'
-  }
+const cells = document.querySelectorAll(".cell");
+const restartButton = document.getElementById("restartButton");
+const undoButton = document.getElementById("undoButton");
+const results = document.getElementById("results");
 
-  // Update .cell styles
-  var cells = document.querySelectorAll('.cell')
-  cells.forEach(function (cell) {
-    cell.style.borderStyle = 'solid'
-    cell.style.borderWidth = '2px'
-  })
+console.log("Script loaded, cells found:", cells.length);
 
-  // Update #restartButton styles
-  var restartButton = document.querySelector('#restartButton')
-  if (restartButton) {
-    restartButton.style.marginTop = '20px'
-    restartButton.style.padding = '5px'
-  }
+let currentPlayer = "X";
+let gameOn = true;
+let moveHistory = [];
 
-
-
-let currentPlayer = 'X'
-let gameOn = true
 const winningCombinations = [
   [0, 1, 2],
   [3, 4, 5],
-  [6, 7, 8], // Rows
+  [6, 7, 8],
   [0, 3, 6],
   [1, 4, 7],
-  [2, 5, 8], // Columns
+  [2, 5, 8],
   [0, 4, 8],
-  [2, 4, 6], // Diagonals
-]
+  [2, 4, 6]
+];
 
-function checkWin(currentPlayer) {
-  return winningCombinations.some((combination) => {
-    return combination.every((index) => {
-      return cells[index].textContent === currentPlayer
-    })
-  })
+// Initialize the game: attach listeners and set initial UI state
+function init() {
+  cells.forEach((cell, index) => {
+    cell.addEventListener("click", () => handleCellClick(index));
+  });
+
+  undoButton.addEventListener("click", undoMove);
+  restartButton.addEventListener("click", restartGame);
+
+  updateUndoButton();
+}
+
+function handleCellClick(index) {
+  if (!gameOn) return;
+  const cell = cells[index];
+  if (cell.textContent !== "") return;
+
+  makeMove(index);
+}
+
+function makeMove(index) {
+  cells[index].textContent = currentPlayer;
+  moveHistory.push(index);
+
+  const winComb = getWinningCombination(currentPlayer);
+  if (winComb) {
+    handleWin(winComb);
+    return;
+  }
+
+  if (checkDraw()) {
+    handleDraw();
+    return;
+  }
+
+  // Swap player and update undo state
+  currentPlayer = currentPlayer === "X" ? "O" : "X";
+  updateUndoButton();
+}
+
+function getWinningCombination(player) {
+  for (const comb of winningCombinations) {
+    if (comb.every(idx => cells[idx].textContent === player)) {
+      return comb;
+    }
+  }
+  return null;
+}
+
+function handleWin(comb) {
+  highlightWinningCells(comb);
+  results.textContent = `${currentPlayer} Wins!`;
+  gameOn = false;
+  updateUndoButton();
+}
+
+function handleDraw() {
+  results.textContent = "Draw!";
+  gameOn = false;
+  updateUndoButton();
 }
 
 function checkDraw() {
-  return [...cells].every((cell) => cell.textContent)
+  return [...cells].every(cell => cell.textContent !== "");
 }
-var moveHistory = [];
+
+function undoMove() {
+  if (moveHistory.length === 0) return;
+
+  const lastIndex = moveHistory.pop();
+  cells[lastIndex].textContent = "";
+  clearHighlights();
+
+  // Flip current player back to the one who made the undone move
+  currentPlayer = currentPlayer === "X" ? "O" : "X";
+  results.textContent = "";
+  gameOn = true;
+  updateUndoButton();
+}
+
+function restartGame() {
+  cells.forEach(c => {
+    c.textContent = "";
+  });
+  moveHistory = [];
+  currentPlayer = "X";
+  gameOn = true;
+  results.textContent = "";
+  clearHighlights();
+  updateUndoButton();
+}
+
+function highlightWinningCells(comb) {
+  clearHighlights();
+  comb.forEach(idx => cells[idx].classList.add("win"));
+}
+
+function clearHighlights() {
+  cells.forEach(c => c.classList.remove("win"));
+}
 
 function updateUndoButton() {
-  if (moveHistory.length > 0) {
-    undoButton.disabled = false;
-  } else {
-    undoButton.disabled = true;
-  }
+  undoButton.disabled = moveHistory.length === 0;
 }
 
-cells.forEach((cell, index) => {
-  cell.addEventListener('click', () => {
-    if (cell.textContent === '' && gameOn) {
-      cell.textContent = currentPlayer
-      moveHistory.push(index);
-
-      if (checkWin(currentPlayer)) {
-        alert(`${currentPlayer} wins!`)
-        gameOn = false
-        updateUndoButton();
-        restart();
-        return
-      }
-      if (checkDraw()) {
-        alert("It's a draw!")
-        gameOn = false
-        updateUndoButton();
-      }
-      currentPlayer = currentPlayer === 'X' ? 'O' : 'X'
-      updateUndoButton();
-    }
-  })
-})
-
-
-
-
-var undoButton = document.createElement("button");
-undoButton.id = "undoButton";
-undoButton.textContent = "Undo";
-document.body.appendChild(undoButton);
-
-undoButton.addEventListener('click', () => {
-  if (moveHistory.length > 0) {
-    var lastMoveIndex = moveHistory.pop();
-    cells[lastMoveIndex].textContent = '';
-    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-    updateUndoButton();
-  }
-});
-function restart(){
-    for (let i = 0; i<9; i++){
-        cells[i].textContent = "";
-    }
-}
-restartButton.addEventListener('click',restart)
-
-
-// Add after existing code
-
-//Implement an Undo button with id  "undoButton"  which would undo the last move made and can be used multiple times to undo multiple moves
+// Start the game wiring
+init();
